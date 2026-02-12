@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPad - Prescription</title>
+    <link rel="stylesheet" th:href="@{/css/prescription.css}">
+</head>
+<body>
+    <div id="prescription-page">
+
+        <!-- Doctor Header -->
+        <div class="doctor-header">
+            <h1 th:text="${doctor.name}">Dr. Name</h1>
+            <p class="qualifications" th:text="${doctor.qualifications}">MBBS, MD</p>
+            <p class="clinic-name" th:text="${doctor.clinicName}">Clinic Name</p>
+            <p class="doctor-details">
+                <span th:text="'Reg: ' + ${doctor.registrationNumber}">Reg: MCI-123456</span>
+                <span> | </span>
+                <span th:text="'Phone: ' + ${doctor.phone}">Phone: xxx</span>
+            </p>
+            <p class="address" th:text="${doctor.address}">Address</p>
+        </div>
+
+        <hr/>
+
+        <!-- Patient Info -->
+        <div class="patient-info">
+            <div class="form-row">
+                <label for="patientName">Patient Name:</label>
+                <input type="text" id="patientName" placeholder="Enter patient name" />
+            </div>
+            <div class="form-row">
+                <label>Date:</label>
+                <span id="prescriptionDate"></span>
+            </div>
+        </div>
+
+        <hr/>
+
+        <!-- Rx Symbol -->
+        <div class="rx-symbol">&#8478;</div>
+
+        <!-- Medicine Search (hidden in print) -->
+        <div class="medicine-search no-print">
+            <label for="medicineInput">Add Medicine:</label>
+            <div class="autocomplete-wrapper">
+                <input type="text" id="medicineInput"
+                       placeholder="Type medicine name (min 2 letters)..." autocomplete="off" />
+                <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+            </div>
+        </div>
+
+        <!-- Medicine Table -->
+        <table id="medicineTable">
+            <thead>
+                <tr>
+                    <th class="col-num">#</th>
+                    <th class="col-name">Medicine</th>
+                    <th class="col-dosage">Morning</th>
+                    <th class="col-dosage">Noon</th>
+                    <th class="col-dosage">Night</th>
+                    <th class="col-action no-print">Action</th>
+                </tr>
+            </thead>
+            <tbody id="medicineTableBody">
+                <!-- Rows added dynamically by JavaScript -->
+            </tbody>
+        </table>
+
+        <p id="noMedicinesMsg" class="no-medicines-msg">No medicines added yet. Use the search above to add medicines.</p>
+
+        <!-- Instructions -->
+        <div class="instructions-section">
+            <label for="instructions">Instructions / Notes:</label>
+            <textarea id="instructions" rows="4"
+                      placeholder="e.g., Take after food. Avoid cold drinks. Follow up after 5 days."
+                      class="no-print"></textarea>
+            <div id="instructionsPrint" class="print-only"></div>
+        </div>
+
+        <hr/>
+
+        <!-- Footer -->
+        <div class="prescription-footer">
+            <div class="signature-line">
+                <p>____________________________</p>
+                <p th:text="${doctor.name}">Doctor Signature</p>
+            </div>
+        </div>
+
+        <!-- Print Button (hidden in print) -->
+        <div class="actions no-print">
+            <button type="button" onclick="printPrescription()">
+                Print Prescription
+            </button>
+            <a th:href="@{/medicines}" class="manage-link">Manage Medicines</a>
+        </div>
+
+    </div>
+
+    <script th:src="@{/js/prescription.js}"></script>
+</body>
+</html>

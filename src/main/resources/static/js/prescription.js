@@ -1,22 +1,66 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // Set today's date
-    const today = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    var today = new Date();
+    var options = { year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('prescriptionDate').textContent =
         today.toLocaleDateString('en-IN', options);
 
     // Focus on patient name field
     document.getElementById('patientName').focus();
 
-    // Autocomplete setup
-    const medicineInput = document.getElementById('medicineInput');
-    const dropdown = document.getElementById('autocompleteDropdown');
-    let debounceTimer;
+    // ─── Medicine Autocomplete ──────────────────────────
+    setupAutocomplete({
+        inputId: 'medicineInput',
+        dropdownId: 'autocompleteDropdown',
+        searchUrl: '/api/medicines/search?q=',
+        onSelect: function (item) { addMedicineRow(item.name); },
+        displayField: 'name',
+        categoryField: 'category'
+    });
 
-    medicineInput.addEventListener('input', function () {
+    // ─── Symptom Autocomplete ───────────────────────────
+    setupAutocomplete({
+        inputId: 'symptomInput',
+        dropdownId: 'symptomDropdown',
+        searchUrl: '/api/symptoms/search?q=',
+        onSelect: function (item) { addSymptomItem(item); },
+        displayField: 'name',
+        categoryField: null
+    });
+
+    // ─── Diagnosis Autocomplete ─────────────────────────
+    setupAutocomplete({
+        inputId: 'diagnosisInput',
+        dropdownId: 'diagnosisDropdown',
+        searchUrl: '/api/diagnoses/search?q=',
+        onSelect: function (item) { addDiagnosisItem(item); },
+        displayField: 'name',
+        categoryField: 'category'
+    });
+
+    // Close all dropdowns on outside click
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.autocomplete-wrapper')) {
+            document.querySelectorAll('.autocomplete-dropdown').forEach(function (dd) {
+                dd.style.display = 'none';
+            });
+        }
+    });
+});
+
+// ═══════════════════════════════════════════════════════
+// Generic Autocomplete
+// ═══════════════════════════════════════════════════════
+
+function setupAutocomplete(config) {
+    var input = document.getElementById(config.inputId);
+    var dropdown = document.getElementById(config.dropdownId);
+    var debounceTimer;
+
+    input.addEventListener('input', function () {
         clearTimeout(debounceTimer);
-        const query = this.value.trim();
+        var query = this.value.trim();
 
         if (query.length < 2) {
             dropdown.style.display = 'none';
@@ -25,64 +69,158 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         debounceTimer = setTimeout(function () {
-            fetch('/api/medicines/search?q=' + encodeURIComponent(query))
-                .then(function (response) { return response.json(); })
-                .then(function (medicines) {
+            fetch(config.searchUrl + encodeURIComponent(query))
+                .then(function (r) { return r.json(); })
+                .then(function (items) {
                     dropdown.innerHTML = '';
-                    if (medicines.length === 0) {
+                    if (items.length === 0) {
                         dropdown.style.display = 'none';
                         return;
                     }
-                    medicines.forEach(function (med) {
-                        var item = document.createElement('div');
-                        item.className = 'autocomplete-item';
-                        item.textContent = med.name;
-                        if (med.category) {
+                    items.forEach(function (item) {
+                        var div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = item[config.displayField];
+                        if (config.categoryField && item[config.categoryField]) {
                             var cat = document.createElement('span');
                             cat.className = 'autocomplete-category';
-                            cat.textContent = ' (' + med.category + ')';
-                            item.appendChild(cat);
+                            cat.textContent = ' (' + item[config.categoryField] + ')';
+                            div.appendChild(cat);
                         }
-                        item.addEventListener('click', function () {
-                            addMedicineRow(med.name);
-                            medicineInput.value = '';
+                        div.addEventListener('click', function () {
+                            config.onSelect(item);
+                            input.value = '';
                             dropdown.style.display = 'none';
                             dropdown.innerHTML = '';
-                            medicineInput.focus();
+                            input.focus();
                         });
-                        dropdown.appendChild(item);
+                        dropdown.appendChild(div);
                     });
                     dropdown.style.display = 'block';
                 })
-                .catch(function (err) {
-                    console.error('Autocomplete error:', err);
-                });
+                .catch(function (err) { console.error('Autocomplete error:', err); });
         }, 300);
     });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.autocomplete-wrapper')) {
-            dropdown.style.display = 'none';
-        }
-    });
-
-    // Allow Enter key to select first item in dropdown
-    medicineInput.addEventListener('keydown', function (e) {
+    input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
-            var firstItem = dropdown.querySelector('.autocomplete-item');
-            if (firstItem) {
-                firstItem.click();
-            }
+            var first = dropdown.querySelector('.autocomplete-item');
+            if (first) first.click();
         }
     });
-});
+}
 
-// Row counter
+// ═══════════════════════════════════════════════════════
+// Symptoms
+// ═══════════════════════════════════════════════════════
+
+var addedSymptoms = {}; // symptomId -> { name, subSymptoms: [{id, name, checked}] }
+
+function addSymptomItem(symptom) {
+    if (addedSymptoms[symptom.id]) {
+        alert('This symptom is already added.');
+        return;
+    }
+
+    // Fetch sub-symptoms
+    fetch('/api/symptoms/' + symptom.id + '/subsymptoms')
+        .then(function (r) { return r.json(); })
+        .then(function (subs) {
+            addedSymptoms[symptom.id] = {
+                name: symptom.name,
+                subSymptoms: subs.map(function (s) { return { id: s.id, name: s.name, checked: true }; })
+            };
+            renderSymptomsList();
+        });
+}
+
+function removeSymptomItem(symptomId) {
+    delete addedSymptoms[symptomId];
+    renderSymptomsList();
+}
+
+function toggleSubSymptom(symptomId, subId) {
+    var sym = addedSymptoms[symptomId];
+    if (!sym) return;
+    sym.subSymptoms.forEach(function (s) {
+        if (s.id === subId) s.checked = !s.checked;
+    });
+}
+
+function renderSymptomsList() {
+    var container = document.getElementById('symptomsList');
+    container.innerHTML = '';
+
+    var ids = Object.keys(addedSymptoms);
+    if (ids.length === 0) return;
+
+    ids.forEach(function (symptomId) {
+        var sym = addedSymptoms[symptomId];
+        var div = document.createElement('div');
+        div.className = 'clinical-item';
+
+        var html = '<strong>' + escapeHtml(sym.name) + '</strong> ';
+
+        if (sym.subSymptoms.length > 0) {
+            sym.subSymptoms.forEach(function (sub) {
+                html += '<label class="sub-checkbox no-print">' +
+                    '<input type="checkbox" ' + (sub.checked ? 'checked' : '') +
+                    ' onchange="toggleSubSymptom(' + symptomId + ',' + sub.id + ')">' +
+                    escapeHtml(sub.name) + '</label> ';
+            });
+        }
+
+        html += '<button class="clinical-remove-btn no-print" onclick="removeSymptomItem(' + symptomId + ')">&times;</button>';
+
+        div.innerHTML = html;
+        container.appendChild(div);
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// Diagnosis
+// ═══════════════════════════════════════════════════════
+
+var addedDiagnoses = {}; // diagId -> { name }
+
+function addDiagnosisItem(diag) {
+    if (addedDiagnoses[diag.id]) {
+        alert('This diagnosis is already added.');
+        return;
+    }
+    addedDiagnoses[diag.id] = { name: diag.name };
+    renderDiagnosisList();
+}
+
+function removeDiagnosisItem(diagId) {
+    delete addedDiagnoses[diagId];
+    renderDiagnosisList();
+}
+
+function renderDiagnosisList() {
+    var container = document.getElementById('diagnosisList');
+    container.innerHTML = '';
+
+    var ids = Object.keys(addedDiagnoses);
+    if (ids.length === 0) return;
+
+    ids.forEach(function (diagId) {
+        var diag = addedDiagnoses[diagId];
+        var div = document.createElement('div');
+        div.className = 'clinical-item';
+        div.innerHTML = '<strong>' + escapeHtml(diag.name) + '</strong> ' +
+            '<button class="clinical-remove-btn no-print" onclick="removeDiagnosisItem(' + diagId + ')">&times;</button>';
+        container.appendChild(div);
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// Medicine Table
+// ═══════════════════════════════════════════════════════
+
 var rowCounter = 0;
 
 function addMedicineRow(medicineName) {
-    // Prevent duplicate medicines
     var existingRows = document.querySelectorAll('#medicineTableBody tr');
     for (var i = 0; i < existingRows.length; i++) {
         if (existingRows[i].cells[1].textContent === medicineName) {
@@ -170,8 +308,11 @@ function updateNoMedicinesMsg() {
     }
 }
 
+// ═══════════════════════════════════════════════════════
+// Print
+// ═══════════════════════════════════════════════════════
+
 function printPrescription() {
-    // Validate: at least patient name and one medicine
     var patientName = document.getElementById('patientName').value.trim();
     if (!patientName) {
         alert('Please enter the patient name before printing.');
@@ -185,15 +326,51 @@ function printPrescription() {
         return;
     }
 
-    // Copy instructions text to the print-only div
+    // Sync symptoms print section
+    var symptomsPrint = document.getElementById('symptomsPrint');
+    var symptomTexts = [];
+    Object.keys(addedSymptoms).forEach(function (id) {
+        var sym = addedSymptoms[id];
+        var checkedSubs = sym.subSymptoms.filter(function (s) { return s.checked; });
+        var text = sym.name;
+        if (checkedSubs.length > 0) {
+            text += ' (' + checkedSubs.map(function (s) { return s.name; }).join(', ') + ')';
+        }
+        symptomTexts.push(text);
+    });
+    symptomsPrint.innerHTML = symptomTexts.length > 0
+        ? '<strong>Symptoms:</strong> ' + escapeHtml(symptomTexts.join('; '))
+        : '';
+
+    // Sync diagnosis print section
+    var diagnosisPrint = document.getElementById('diagnosisPrint');
+    var diagTexts = [];
+    Object.keys(addedDiagnoses).forEach(function (id) {
+        diagTexts.push(addedDiagnoses[id].name);
+    });
+    diagnosisPrint.innerHTML = diagTexts.length > 0
+        ? '<strong>Diagnosis:</strong> ' + escapeHtml(diagTexts.join('; '))
+        : '';
+
+    // Sync instructions
     var textarea = document.getElementById('instructions');
     var printDiv = document.getElementById('instructionsPrint');
     printDiv.textContent = textarea.value;
 
-    // Update all dosage display spans to match current select values
+    // Sync dosage displays
     document.querySelectorAll('.dosage-select').forEach(function (select) {
         updateDosageDisplay(select);
     });
 
     window.print();
+}
+
+// ═══════════════════════════════════════════════════════
+// Utility
+// ═══════════════════════════════════════════════════════
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
 }

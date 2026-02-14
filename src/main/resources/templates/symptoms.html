@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPad - Manage Symptoms</title>
+    <link rel="stylesheet" th:href="@{/css/prescription.css}">
+    <link rel="stylesheet" th:href="@{/css/medicines.css}">
+</head>
+<body>
+    <div id="medicines-page">
+
+        <div class="page-header">
+            <h1>Manage Symptoms &amp; Sub-Symptoms</h1>
+            <a th:href="@{/}" class="back-link">&larr; Back to Prescription</a>
+        </div>
+
+        <hr/>
+
+        <!-- Add Symptom -->
+        <div class="add-medicine-form">
+            <h2>Add New Symptom</h2>
+            <div class="form-fields">
+                <div class="field">
+                    <label for="symptomName">Symptom Name *</label>
+                    <input type="text" id="symptomName" placeholder="e.g., Fever" />
+                </div>
+                <button onclick="addSymptom()">Add Symptom</button>
+            </div>
+            <p id="symptomMsg" class="msg"></p>
+        </div>
+
+        <hr/>
+
+        <!-- Add Sub-Symptom -->
+        <div class="add-medicine-form">
+            <h2>Add New Sub-Symptom</h2>
+            <div class="form-fields">
+                <div class="field">
+                    <label for="parentSymptom">Parent Symptom *</label>
+                    <select id="parentSymptom">
+                        <option value="">-- Select Symptom --</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="subSymptomName">Sub-Symptom Name *</label>
+                    <input type="text" id="subSymptomName" placeholder="e.g., High Grade" />
+                </div>
+                <button onclick="addSubSymptom()">Add Sub-Symptom</button>
+            </div>
+            <p id="subSymptomMsg" class="msg"></p>
+        </div>
+
+        <hr/>
+
+        <!-- Filter -->
+        <div class="filter-section">
+            <label for="filterInput">Search:</label>
+            <input type="text" id="filterInput" placeholder="Filter symptoms..." oninput="filterSymptoms()" />
+            <span id="symptomCount" class="medicine-count"></span>
+        </div>
+
+        <!-- Symptom List -->
+        <table id="medicineListTable">
+            <thead>
+                <tr>
+                    <th class="col-id">#</th>
+                    <th>Symptom</th>
+                    <th>Sub-Symptoms</th>
+                    <th class="col-action">Action</th>
+                </tr>
+            </thead>
+            <tbody id="symptomListBody">
+            </tbody>
+        </table>
+
+        <p id="noResultsMsg" class="no-results-msg" style="display:none;">No symptoms found.</p>
+
+    </div>
+
+    <script th:src="@{/js/symptoms.js}"></script>
+</body>
+</html>

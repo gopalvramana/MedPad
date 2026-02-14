@@ -3,8 +3,8 @@ package com.medpad.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "MEDICINES")
-public class Medicine {
+@Table(name = "DIAGNOSES")
+public class Diagnosis {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,9 +16,9 @@ public class Medicine {
     @Column
     private String category;
 
-    public Medicine() {}
+    public Diagnosis() {}
 
-    public Medicine(Long id, String name, String category) {
+    public Diagnosis(Long id, String name, String category) {
         this.id = id;
         this.name = name;
         this.category = category;

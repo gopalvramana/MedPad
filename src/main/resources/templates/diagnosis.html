@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPad - Manage Diagnoses</title>
+    <link rel="stylesheet" th:href="@{/css/prescription.css}">
+    <link rel="stylesheet" th:href="@{/css/medicines.css}">
+</head>
+<body>
+    <div id="medicines-page">
+
+        <div class="page-header">
+            <h1>Manage Diagnoses</h1>
+            <a th:href="@{/}" class="back-link">&larr; Back to Prescription</a>
+        </div>
+
+        <hr/>
+
+        <!-- Add Diagnosis Form -->
+        <div class="add-medicine-form">
+            <h2>Add New Diagnosis</h2>
+            <div class="form-fields">
+                <div class="field">
+                    <label for="diagName">Diagnosis Name *</label>
+                    <input type="text" id="diagName" placeholder="e.g., Viral Fever" />
+                </div>
+                <div class="field">
+                    <label for="diagCategory">Category</label>
+                    <input type="text" id="diagCategory" placeholder="e.g., Infectious" />
+                </div>
+                <button onclick="addDiagnosis()">Add Diagnosis</button>
+            </div>
+            <p id="addMsg" class="msg"></p>
+        </div>
+
+        <hr/>
+
+        <!-- Filter -->
+        <div class="filter-section">
+            <label for="filterInput">Search:</label>
+            <input type="text" id="filterInput" placeholder="Filter diagnoses..." oninput="filterDiagnoses()" />
+            <span id="diagCount" class="medicine-count"></span>
+        </div>
+
+        <!-- Diagnosis List -->
+        <table id="medicineListTable">
+            <thead>
+                <tr>
+                    <th class="col-id">#</th>
+                    <th>Diagnosis</th>
+                    <th>Category</th>
+                    <th class="col-action">Action</th>
+                </tr>
+            </thead>
+            <tbody id="diagListBody">
+            </tbody>
+        </table>
+
+        <p id="noResultsMsg" class="no-results-msg" style="display:none;">No diagnoses found.</p>
+
+    </div>
+
+    <script th:src="@{/js/diagnosis.js}"></script>
+</body>
+</html>

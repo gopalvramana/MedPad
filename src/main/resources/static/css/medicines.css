@@ -181,3 +181,52 @@
     padding: 20px 0;
     font-size: 14px;
 }
+
+/* ─── Sub-symptom tags ────────────────────────────── */
+.sub-symptoms-cell {
+    line-height: 1.8;
+}
+
+.sub-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #eaf4fc;
+    border: 1px solid #cde1f2;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 13px;
+    margin: 2px 3px;
+    white-space: nowrap;
+}
+
+.sub-remove-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 0 2px;
+    font-weight: bold;
+}
+
+.sub-remove-btn:hover {
+    color: #c0392b;
+}
+
+/* ─── Select dropdown styling ─────────────────────── */
+.field select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 240px;
+    background: white;
+}
+
+.field select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 4px rgba(52, 152, 219, 0.3);
+}

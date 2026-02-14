@@ -63,3 +63,92 @@ SELECT * FROM (VALUES
     ('Warfarin', 'Anticoagulant')
 ) AS t(NAME, CATEGORY)
 WHERE (SELECT COUNT(*) FROM MEDICINES) = 0;
+
+-- Seed symptoms
+INSERT INTO SYMPTOMS (NAME)
+SELECT * FROM (VALUES
+    ('Fever'),
+    ('Cough'),
+    ('Headache'),
+    ('Body Pain'),
+    ('Cold / Runny Nose'),
+    ('Sore Throat'),
+    ('Vomiting'),
+    ('Diarrhea'),
+    ('Chest Pain'),
+    ('Abdominal Pain'),
+    ('Breathlessness'),
+    ('Dizziness'),
+    ('Fatigue'),
+    ('Skin Rash'),
+    ('Joint Pain')
+) AS t(NAME)
+WHERE (SELECT COUNT(*) FROM SYMPTOMS) = 0;
+
+-- Seed sub-symptoms (references symptom IDs by name lookup)
+INSERT INTO SUB_SYMPTOMS (NAME, SYMPTOM_ID)
+SELECT ss.NAME, s.ID FROM (VALUES
+    ('High Grade', 'Fever'),
+    ('Low Grade', 'Fever'),
+    ('Intermittent', 'Fever'),
+    ('With Chills', 'Fever'),
+    ('Dry Cough', 'Cough'),
+    ('Productive Cough', 'Cough'),
+    ('With Phlegm', 'Cough'),
+    ('Chronic Cough', 'Cough'),
+    ('Frontal', 'Headache'),
+    ('Temporal', 'Headache'),
+    ('Migraine', 'Headache'),
+    ('With Nausea', 'Headache'),
+    ('Generalized', 'Body Pain'),
+    ('Muscle Pain', 'Body Pain'),
+    ('Back Pain', 'Body Pain'),
+    ('Sneezing', 'Cold / Runny Nose'),
+    ('Nasal Congestion', 'Cold / Runny Nose'),
+    ('Watery Discharge', 'Cold / Runny Nose'),
+    ('Pain on Swallowing', 'Sore Throat'),
+    ('Redness', 'Sore Throat'),
+    ('With Nausea', 'Vomiting'),
+    ('Projectile', 'Vomiting'),
+    ('After Food', 'Vomiting'),
+    ('Watery', 'Diarrhea'),
+    ('Bloody', 'Diarrhea'),
+    ('With Cramps', 'Diarrhea'),
+    ('Left Side', 'Chest Pain'),
+    ('On Exertion', 'Chest Pain'),
+    ('At Rest', 'Chest Pain'),
+    ('Upper Abdomen', 'Abdominal Pain'),
+    ('Lower Abdomen', 'Abdominal Pain'),
+    ('Cramping', 'Abdominal Pain'),
+    ('On Exertion', 'Breathlessness'),
+    ('At Rest', 'Breathlessness'),
+    ('Nocturnal', 'Breathlessness')
+) AS ss(NAME, SYMPTOM_NAME)
+JOIN SYMPTOMS s ON s.NAME = ss.SYMPTOM_NAME
+WHERE (SELECT COUNT(*) FROM SUB_SYMPTOMS) = 0;
+
+-- Seed diagnoses
+INSERT INTO DIAGNOSES (NAME, CATEGORY)
+SELECT * FROM (VALUES
+    ('Viral Fever', 'Infectious'),
+    ('Viral Flu', 'Infectious'),
+    ('Upper Respiratory Infection', 'Respiratory'),
+    ('Lower Respiratory Infection', 'Respiratory'),
+    ('Bronchitis', 'Respiratory'),
+    ('Pneumonia', 'Respiratory'),
+    ('Asthma', 'Respiratory'),
+    ('Gastritis', 'Gastrointestinal'),
+    ('Acid Reflux (GERD)', 'Gastrointestinal'),
+    ('Gastroenteritis', 'Gastrointestinal'),
+    ('Urinary Tract Infection', 'Urological'),
+    ('Hypertension', 'Cardiovascular'),
+    ('Type 2 Diabetes', 'Metabolic'),
+    ('Migraine', 'Neurological'),
+    ('Allergic Rhinitis', 'Allergic'),
+    ('Dermatitis', 'Dermatological'),
+    ('Tonsillitis', 'ENT'),
+    ('Sinusitis', 'ENT'),
+    ('Otitis Media', 'ENT'),
+    ('Dengue Fever', 'Infectious')
+) AS t(NAME, CATEGORY)
+WHERE (SELECT COUNT(*) FROM DIAGNOSES) = 0;

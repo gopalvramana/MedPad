@@ -38,6 +38,36 @@
 
         <hr/>
 
+        <!-- Symptoms Section -->
+        <div class="clinical-section">
+            <div class="clinical-search no-print">
+                <label for="symptomInput">Symptoms:</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="symptomInput"
+                           placeholder="Type symptom name..." autocomplete="off" />
+                    <div id="symptomDropdown" class="autocomplete-dropdown"></div>
+                </div>
+            </div>
+            <div id="symptomsList" class="clinical-items"></div>
+            <div id="symptomsPrint" class="print-only clinical-print"></div>
+        </div>
+
+        <!-- Diagnosis Section -->
+        <div class="clinical-section">
+            <div class="clinical-search no-print">
+                <label for="diagnosisInput">Diagnosis:</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="diagnosisInput"
+                           placeholder="Type diagnosis name..." autocomplete="off" />
+                    <div id="diagnosisDropdown" class="autocomplete-dropdown"></div>
+                </div>
+            </div>
+            <div id="diagnosisList" class="clinical-items"></div>
+            <div id="diagnosisPrint" class="print-only clinical-print"></div>
+        </div>
+
+        <hr/>
+
         <!-- Rx Symbol -->
         <div class="rx-symbol">&#8478;</div>
 
@@ -95,6 +125,8 @@
                 Print Prescription
             </button>
             <a th:href="@{/medicines}" class="manage-link">Manage Medicines</a>
+            <a th:href="@{/symptoms}" class="manage-link">Manage Symptoms</a>
+            <a th:href="@{/diagnosis}" class="manage-link">Manage Diagnoses</a>
         </div>
 
     </div>

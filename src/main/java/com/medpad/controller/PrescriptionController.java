@@ -24,4 +24,14 @@ public class PrescriptionController {
     public String showMedicineManagement() {
         return "medicines";
     }
+
+    @GetMapping("/symptoms")
+    public String showSymptomManagement() {
+        return "symptoms";
+    }
+
+    @GetMapping("/diagnosis")
+    public String showDiagnosisManagement() {
+        return "diagnosis";
+    }
 }

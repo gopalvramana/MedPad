@@ -27,7 +27,7 @@ fi
 if ! command -v jpackage &> /dev/null; then
     JPACKAGE="$JAVA_HOME/bin/jpackage"
     if [ ! -f "$JPACKAGE" ]; then
-        echo "ERROR: jpackage not found. Ensure JDK 21+ is installed."
+        echo "ERROR: jpackage not found. Ensure JDK 17+ is installed."
         exit 1
     fi
 else

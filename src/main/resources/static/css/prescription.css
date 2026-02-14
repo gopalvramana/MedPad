@@ -350,6 +350,81 @@ hr {
     text-decoration: underline;
 }
 
+/* ─── Clinical Sections (Symptoms / Diagnosis) ────── */
+.clinical-section {
+    margin: 10px 0;
+}
+
+.clinical-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.clinical-search label {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.clinical-items {
+    min-height: 5px;
+}
+
+.clinical-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0f7ff;
+    border: 1px solid #d0e3f7;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 3px 4px;
+    font-size: 14px;
+    flex-wrap: wrap;
+}
+
+.clinical-item strong {
+    color: #2c3e50;
+}
+
+.sub-checkbox {
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 4px;
+}
+
+.sub-checkbox input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.clinical-remove-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 1px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    margin-left: 4px;
+}
+
+.clinical-remove-btn:hover {
+    background: #c0392b;
+}
+
+.clinical-print {
+    font-size: 14px;
+    padding: 4px 0;
+}
+
 /* ─── Utility ──────────────────────────────────────── */
 .print-only {
     display: none;
@@ -460,6 +535,17 @@ hr {
 
     .signature-line p:first-child {
         color: #333;
+    }
+
+    /* Clinical print sections */
+    .clinical-print {
+        display: block !important;
+        font-size: 14px;
+        padding: 2px 0;
+    }
+
+    .clinical-section {
+        margin: 5px 0;
     }
 
     /* Actions border */

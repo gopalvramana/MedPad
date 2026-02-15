@@ -36,11 +36,16 @@ function renderPatients(patients) {
             '<td style="text-align:center;">' + escapeHtml(p.gender) + '</td>' +
             '<td>' + (p.phone ? escapeHtml(p.phone) : '-') + '</td>' +
             '<td style="text-align:center;">' +
+                '<button class="remove-btn" onclick="viewHistory(' + p.id + ')" title="View prescription history" style="background:#8e44ad;font-size:14px;padding:4px 8px;margin-right:4px;">&#128196;</button>' +
                 '<button class="remove-btn" onclick="editPatient(' + p.id + ')" title="Edit patient" style="background:#3498db;font-size:14px;padding:4px 8px;margin-right:4px;">&#9998;</button>' +
                 '<button class="remove-btn" onclick="deletePatient(' + p.id + ', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\')" title="Remove patient">&times;</button>' +
             '</td>';
         tbody.appendChild(tr);
     });
+}
+
+function viewHistory(patientId) {
+    window.location.href = '/prescription-history?patientId=' + patientId;
 }
 
 function addPatient() {
@@ -103,6 +108,11 @@ function deletePatient(id, name) {
 
     fetch('/api/patients/' + id, { method: 'DELETE' })
         .then(function (r) {
+            if (r.status === 409) {
+                return r.json().then(function (body) {
+                    throw new Error(body.error || 'Cannot delete patient with existing prescriptions.');
+                });
+            }
             if (!r.ok) throw new Error('Failed to delete');
             loadPatients();
         })

@@ -230,3 +230,187 @@
     border-color: #3498db;
     box-shadow: 0 0 4px rgba(52, 152, 219, 0.3);
 }
+
+/* ─── Patient Banner (History Page) ──────────────── */
+.patient-banner {
+    background: #f0f7ff;
+    border: 1px solid #d0e3f7;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+}
+
+.patient-banner h2 {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 2px;
+}
+
+.banner-details {
+    font-size: 14px;
+    color: #555;
+}
+
+/* ─── Prescription Cards ─────────────────────────── */
+.rx-card {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.rx-card-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+}
+
+.rx-card-header:hover {
+    background: #f0f0f0;
+}
+
+.rx-card-date {
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+    min-width: 180px;
+}
+
+.rx-card-summary {
+    flex: 1;
+    font-size: 13px;
+    color: #666;
+}
+
+.rx-card-toggle {
+    font-size: 12px;
+    color: #999;
+    margin-left: 10px;
+}
+
+.rx-card-detail {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.rx-card-detail p {
+    margin-bottom: 8px;
+}
+
+.rx-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.rx-detail-table th,
+.rx-detail-table td {
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.rx-detail-table th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.rx-instructions {
+    background: #fffbe6;
+    border: 1px solid #f0e6b8;
+    border-radius: 3px;
+    padding: 8px 12px;
+    margin-top: 8px;
+}
+
+/* ─── Card Actions ────────────────────────────────── */
+.rx-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.rx-reprint-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.rx-reprint-btn:hover {
+    background: #2980b9;
+}
+
+.rx-delete-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.rx-delete-btn:hover {
+    background: #c0392b;
+}
+
+/* ─── Purge Section ───────────────────────────────── */
+.purge-section {
+    margin-top: 10px;
+}
+
+.purge-section h3 {
+    font-size: 15px;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.purge-desc {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.purge-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.purge-controls select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.purge-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.purge-btn:hover {
+    background: #c0392b;
+}

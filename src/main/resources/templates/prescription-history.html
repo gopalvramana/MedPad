@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPad - Prescription History</title>
+    <link rel="stylesheet" th:href="@{/css/prescription.css}">
+    <link rel="stylesheet" th:href="@{/css/medicines.css}">
+</head>
+<body>
+    <div id="medicines-page">
+
+        <div class="page-header">
+            <h1>Prescription History</h1>
+            <a th:href="@{/patients}" class="back-link">&larr; Back to Patients</a>
+        </div>
+
+        <hr/>
+
+        <!-- Patient Banner -->
+        <div id="patientBanner" class="patient-banner" style="display:none;">
+            <h2 id="bannerName"></h2>
+            <p id="bannerDetails" class="banner-details"></p>
+        </div>
+
+        <!-- Prescription Cards -->
+        <div id="prescriptionList"></div>
+        <p id="noRxMsg" class="no-results-msg" style="display:none;">No prescriptions found for this patient.</p>
+
+        <hr/>
+
+        <!-- Purge Section -->
+        <div class="purge-section">
+            <h3>Purge Old Prescriptions</h3>
+            <p class="purge-desc">Delete prescriptions older than a specified period. This action cannot be undone.</p>
+            <div class="purge-controls">
+                <select id="purgeMonths">
+                    <option value="6">6 months</option>
+                    <option value="12" selected>12 months</option>
+                    <option value="24">24 months</option>
+                    <option value="36">36 months</option>
+                </select>
+                <button class="purge-btn" onclick="purgeOldPrescriptions()">Purge</button>
+            </div>
+            <p id="purgeMsg" class="msg"></p>
+        </div>
+
+    </div>
+
+    <script th:src="@{/js/prescription-history.js}"></script>
+</body>
+</html>

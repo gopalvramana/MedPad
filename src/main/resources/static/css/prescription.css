@@ -509,6 +509,30 @@ hr {
     padding: 4px 0;
 }
 
+/* ─── Save Toast ───────────────────────────────────── */
+.save-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #27ae60;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    transition: opacity 0.4s ease;
+}
+
+.save-toast-error {
+    background: #e74c3c;
+}
+
+.save-toast-fade {
+    opacity: 0;
+}
+
 /* ─── Utility ──────────────────────────────────────── */
 .print-only {
     display: none;

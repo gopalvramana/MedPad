@@ -2,19 +2,25 @@ package com.medpad.controller;
 
 import com.medpad.entity.Patient;
 import com.medpad.repository.PatientRepository;
+import com.medpad.repository.PrescriptionRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/patients")
 public class PatientApiController {
 
     private final PatientRepository patientRepository;
+    private final PrescriptionRepository prescriptionRepository;
 
-    public PatientApiController(PatientRepository patientRepository) {
+    public PatientApiController(PatientRepository patientRepository,
+                                PrescriptionRepository prescriptionRepository) {
         this.patientRepository = patientRepository;
+        this.prescriptionRepository = prescriptionRepository;
     }
 
     @GetMapping("/search")
@@ -87,9 +93,14 @@ public class PatientApiController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
+    public ResponseEntity<?> deletePatient(@PathVariable Long id) {
         if (!patientRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
+        }
+        long rxCount = prescriptionRepository.countByPatientId(id);
+        if (rxCount > 0) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Cannot delete patient with " + rxCount + " existing prescription(s). Delete or purge prescriptions first."));
         }
         patientRepository.deleteById(id);
         return ResponseEntity.ok().build();

@@ -45,4 +45,9 @@ public class PrescriptionController {
     public String showPatientManagement() {
         return "patients";
     }
+
+    @GetMapping("/prescription-history")
+    public String showPrescriptionHistory() {
+        return "prescription-history";
+    }
 }

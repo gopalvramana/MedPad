@@ -1,4 +1,6 @@
 var selectedPatient = null; // { id, name, age, gender, phone, address }
+var isReprint = false;
+var reprintId = null;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -10,6 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Focus on patient input field
     document.getElementById('patientInput').focus();
+
+    // ─── Check for reprint mode ──────────────────────────
+    var params = new URLSearchParams(window.location.search);
+    reprintId = params.get('reprintId');
+    if (reprintId) {
+        loadPrescriptionForReprint(reprintId);
+    }
 
     // ─── Patient Autocomplete ─────────────────────────
     setupPatientAutocomplete();
@@ -53,6 +62,78 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+// ═══════════════════════════════════════════════════════
+// Reprint Loading
+// ═══════════════════════════════════════════════════════
+
+function loadPrescriptionForReprint(rxId) {
+    fetch('/api/prescriptions/' + rxId)
+        .then(function (r) {
+            if (!r.ok) throw new Error('Prescription not found');
+            return r.json();
+        })
+        .then(function (rx) {
+            isReprint = true;
+
+            // Set date from saved prescription
+            if (rx.prescriptionDate) {
+                var parts = rx.prescriptionDate.split('-');
+                var d = new Date(parts[0], parts[1] - 1, parts[2]);
+                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('prescriptionDate').textContent =
+                    d.toLocaleDateString('en-IN', options);
+            }
+
+            // Select patient
+            if (rx.patient) {
+                selectPatient(rx.patient);
+            }
+
+            // Load symptoms
+            if (rx.symptoms && rx.symptoms.length > 0) {
+                rx.symptoms.forEach(function (s) {
+                    var key = 'reprint_' + s.id;
+                    var subList = [];
+                    if (s.subSymptoms) {
+                        subList = s.subSymptoms.split(',').map(function (name, idx) {
+                            return { id: idx, name: name.trim(), checked: true };
+                        });
+                    }
+                    addedSymptoms[key] = {
+                        name: s.symptomName,
+                        subSymptoms: subList
+                    };
+                });
+                renderSymptomsList();
+            }
+
+            // Load diagnoses
+            if (rx.diagnoses && rx.diagnoses.length > 0) {
+                rx.diagnoses.forEach(function (d) {
+                    var key = 'reprint_' + d.id;
+                    addedDiagnoses[key] = { name: d.diagnosisName };
+                });
+                renderDiagnosisList();
+            }
+
+            // Load medicines with dosages
+            if (rx.medicines && rx.medicines.length > 0) {
+                rx.medicines.forEach(function (m) {
+                    addMedicineRowWithDosages(m.medicineName, m.morningDosage, m.noonDosage, m.nightDosage);
+                });
+            }
+
+            // Load instructions
+            if (rx.instructions) {
+                document.getElementById('instructions').value = rx.instructions;
+            }
+        })
+        .catch(function (err) {
+            console.error('Error loading prescription for reprint:', err);
+            alert('Could not load prescription for reprint.');
+        });
+}
 
 // ═══════════════════════════════════════════════════════
 // Patient Autocomplete
@@ -300,12 +381,12 @@ function renderSymptomsList() {
             sym.subSymptoms.forEach(function (sub) {
                 html += '<label class="sub-checkbox no-print">' +
                     '<input type="checkbox" ' + (sub.checked ? 'checked' : '') +
-                    ' onchange="toggleSubSymptom(' + symptomId + ',' + sub.id + ')">' +
+                    ' onchange="toggleSubSymptom(\'' + symptomId + '\',' + sub.id + ')">' +
                     escapeHtml(sub.name) + '</label> ';
             });
         }
 
-        html += '<button class="clinical-remove-btn no-print" onclick="removeSymptomItem(' + symptomId + ')">&times;</button>';
+        html += '<button class="clinical-remove-btn no-print" onclick="removeSymptomItem(\'' + symptomId + '\')">&times;</button>';
 
         div.innerHTML = html;
         container.appendChild(div);
@@ -344,7 +425,7 @@ function renderDiagnosisList() {
         var div = document.createElement('div');
         div.className = 'clinical-item';
         div.innerHTML = '<strong>' + escapeHtml(diag.name) + '</strong> ' +
-            '<button class="clinical-remove-btn no-print" onclick="removeDiagnosisItem(' + diagId + ')">&times;</button>';
+            '<button class="clinical-remove-btn no-print" onclick="removeDiagnosisItem(\'' + diagId + '\')">&times;</button>';
         container.appendChild(div);
     });
 }
@@ -403,6 +484,38 @@ function addMedicineRow(medicineName) {
     updateNoMedicinesMsg();
 }
 
+function addMedicineRowWithDosages(medicineName, morning, noon, night) {
+    rowCounter++;
+    var tbody = document.getElementById('medicineTableBody');
+    var tr = document.createElement('tr');
+
+    function buildDosageCell(val) {
+        var opt0 = val === '0' ? ' selected' : '';
+        var opt1 = val === '1' ? ' selected' : '';
+        var optH = val === '0.5' ? ' selected' : '';
+        var displayText = val === '0.5' ? '\u00BD' : (val === '0' ? '0' : val);
+        return '<select class="dosage-select no-print" onchange="updateDosageDisplay(this)">' +
+            '<option value="0"' + opt0 + '>--</option>' +
+            '<option value="1"' + opt1 + '>1</option>' +
+            '<option value="0.5"' + optH + '>&frac12;</option>' +
+            '</select>' +
+            '<span class="dosage-display print-only">' + displayText + '</span>';
+    }
+
+    tr.innerHTML =
+        '<td>' + rowCounter + '</td>' +
+        '<td>' + escapeHtml(medicineName) + '</td>' +
+        '<td>' + buildDosageCell(morning) + '</td>' +
+        '<td>' + buildDosageCell(noon) + '</td>' +
+        '<td>' + buildDosageCell(night) + '</td>' +
+        '<td class="no-print">' +
+            '<button class="remove-btn" onclick="removeRow(this)" title="Remove medicine">&times;</button>' +
+        '</td>';
+
+    tbody.appendChild(tr);
+    updateNoMedicinesMsg();
+}
+
 function updateDosageDisplay(selectElement) {
     var span = selectElement.nextElementSibling;
     var val = selectElement.value;
@@ -441,6 +554,91 @@ function updateNoMedicinesMsg() {
         msg.style.display = 'none';
         table.style.display = 'table';
     }
+}
+
+// ═══════════════════════════════════════════════════════
+// Save Prescription to DB
+// ═══════════════════════════════════════════════════════
+
+function savePrescriptionToDb(callback) {
+    // Collect medicines from table
+    var medicines = [];
+    var rows = document.querySelectorAll('#medicineTableBody tr');
+    rows.forEach(function (row, index) {
+        var selects = row.querySelectorAll('.dosage-select');
+        medicines.push({
+            medicineName: row.cells[1].textContent,
+            morningDosage: selects[0].value,
+            noonDosage: selects[1].value,
+            nightDosage: selects[2].value,
+            sortOrder: index + 1
+        });
+    });
+
+    // Collect symptoms
+    var symptoms = [];
+    Object.keys(addedSymptoms).forEach(function (id) {
+        var sym = addedSymptoms[id];
+        var checkedSubs = sym.subSymptoms
+            .filter(function (s) { return s.checked; })
+            .map(function (s) { return s.name; });
+        symptoms.push({
+            symptomName: sym.name,
+            subSymptoms: checkedSubs.join(', ')
+        });
+    });
+
+    // Collect diagnoses
+    var diagnoses = [];
+    Object.keys(addedDiagnoses).forEach(function (id) {
+        diagnoses.push({ diagnosisName: addedDiagnoses[id].name });
+    });
+
+    // Build date in yyyy-MM-dd format
+    var now = new Date();
+    var dateStr = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
+
+    var payload = {
+        patientId: selectedPatient.id,
+        prescriptionDate: dateStr,
+        instructions: document.getElementById('instructions').value,
+        medicines: medicines,
+        symptoms: symptoms,
+        diagnoses: diagnoses
+    };
+
+    fetch('/api/prescriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(function (r) {
+        if (!r.ok) throw new Error('Failed to save prescription');
+        return r.json();
+    })
+    .then(function (saved) {
+        showSaveToast('Prescription saved');
+        if (callback) callback(true);
+    })
+    .catch(function (err) {
+        console.error('Save error:', err);
+        showSaveToast('Save failed — printing anyway', true);
+        if (callback) callback(false);
+    });
+}
+
+function showSaveToast(message, isError) {
+    var toast = document.createElement('div');
+    toast.className = 'save-toast' + (isError ? ' save-toast-error' : '');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(function () {
+        toast.classList.add('save-toast-fade');
+        setTimeout(function () { toast.remove(); }, 400);
+    }, 2000);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -503,7 +701,14 @@ function printPrescription() {
         updateDosageDisplay(select);
     });
 
-    window.print();
+    // Save to DB (skip if reprint), then print
+    if (isReprint) {
+        window.print();
+    } else {
+        savePrescriptionToDb(function () {
+            window.print();
+        });
+    }
 }
 
 // ═══════════════════════════════════════════════════════

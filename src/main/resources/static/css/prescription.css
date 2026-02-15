@@ -670,10 +670,10 @@ hr {
         display: none !important;
     }
 
-    /* Page settings */
+    /* Page settings — extra top margin for pre-printed letterhead */
     @page {
         size: A4;
-        margin: 15mm;
+        margin: 40mm 15mm 15mm 15mm;
     }
 
     /* Prevent table from breaking across pages */

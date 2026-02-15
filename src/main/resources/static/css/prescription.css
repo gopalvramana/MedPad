@@ -567,14 +567,13 @@ hr {
         border-radius: 0;
     }
 
-    /* Doctor header */
+    /* Hide doctor header in print — uses existing letterhead */
     .doctor-header {
-        border-bottom: 2px solid #333;
-        padding-bottom: 10px;
+        display: none !important;
     }
 
-    .doctor-header h1 {
-        color: #000;
+    .doctor-header + hr {
+        display: none !important;
     }
 
     /* Patient info: hide input, show print section */

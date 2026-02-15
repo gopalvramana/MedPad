@@ -15,6 +15,12 @@ public class PrescriptionController {
     }
 
     @GetMapping("/")
+    public String showHome(Model model) {
+        model.addAttribute("doctor", doctorProperties);
+        return "home";
+    }
+
+    @GetMapping("/prescription")
     public String showPrescriptionForm(Model model) {
         model.addAttribute("doctor", doctorProperties);
         return "prescription";
@@ -33,5 +39,10 @@ public class PrescriptionController {
     @GetMapping("/diagnosis")
     public String showDiagnosisManagement() {
         return "diagnosis";
+    }
+
+    @GetMapping("/patients")
+    public String showPatientManagement() {
+        return "patients";
     }
 }

@@ -1,3 +1,5 @@
+var selectedPatient = null; // { id, name, age, gender, phone, address }
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Set today's date
@@ -6,8 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('prescriptionDate').textContent =
         today.toLocaleDateString('en-IN', options);
 
-    // Focus on patient name field
-    document.getElementById('patientName').focus();
+    // Focus on patient input field
+    document.getElementById('patientInput').focus();
+
+    // ─── Patient Autocomplete ─────────────────────────
+    setupPatientAutocomplete();
 
     // ─── Medicine Autocomplete ──────────────────────────
     setupAutocomplete({
@@ -48,6 +53,136 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+// ═══════════════════════════════════════════════════════
+// Patient Autocomplete
+// ═══════════════════════════════════════════════════════
+
+function setupPatientAutocomplete() {
+    var input = document.getElementById('patientInput');
+    var dropdown = document.getElementById('patientDropdown');
+    var debounceTimer;
+
+    input.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        var query = this.value.trim();
+
+        // If user edits after selecting, clear the selection
+        if (selectedPatient && input.value !== selectedPatient.name) {
+            clearPatientSelection();
+        }
+
+        if (query.length < 2) {
+            dropdown.style.display = 'none';
+            dropdown.innerHTML = '';
+            return;
+        }
+
+        debounceTimer = setTimeout(function () {
+            fetch('/api/patients/search?q=' + encodeURIComponent(query))
+                .then(function (r) { return r.json(); })
+                .then(function (patients) {
+                    dropdown.innerHTML = '';
+
+                    patients.forEach(function (p) {
+                        var div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = p.name;
+                        var detail = document.createElement('span');
+                        detail.className = 'autocomplete-category';
+                        detail.textContent = ' (' + p.age + '/' + p.gender + ')';
+                        div.appendChild(detail);
+                        div.addEventListener('click', function () {
+                            selectPatient(p);
+                            dropdown.style.display = 'none';
+                            dropdown.innerHTML = '';
+                        });
+                        dropdown.appendChild(div);
+                    });
+
+                    // Add "New Patient" option
+                    var addNew = document.createElement('div');
+                    addNew.className = 'autocomplete-item autocomplete-add-new';
+                    addNew.textContent = '+ Add New Patient';
+                    addNew.addEventListener('click', function () {
+                        dropdown.style.display = 'none';
+                        dropdown.innerHTML = '';
+                        showNewPatientForm(input.value.trim());
+                    });
+                    dropdown.appendChild(addNew);
+
+                    dropdown.style.display = 'block';
+                })
+                .catch(function (err) { console.error('Patient search error:', err); });
+        }, 300);
+    });
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            var first = dropdown.querySelector('.autocomplete-item');
+            if (first) first.click();
+        }
+    });
+}
+
+function selectPatient(patient) {
+    selectedPatient = patient;
+    var input = document.getElementById('patientInput');
+    input.value = patient.name;
+
+    var details = document.getElementById('patientDetails');
+    document.getElementById('patientNameDisplay').textContent = patient.name;
+    document.getElementById('patientAgeDisplay').textContent = 'Age: ' + patient.age;
+    document.getElementById('patientGenderDisplay').textContent = patient.gender;
+    details.style.display = 'block';
+}
+
+function clearPatientSelection() {
+    selectedPatient = null;
+    document.getElementById('patientDetails').style.display = 'none';
+}
+
+function showNewPatientForm(prefillName) {
+    document.getElementById('newPatientForm').style.display = 'block';
+    document.getElementById('npName').value = prefillName || '';
+    document.getElementById('npAge').value = '';
+    document.getElementById('npGender').value = '';
+    document.getElementById('npMsg').textContent = '';
+    document.getElementById('npName').focus();
+}
+
+function cancelNewPatient() {
+    document.getElementById('newPatientForm').style.display = 'none';
+}
+
+function saveNewPatient() {
+    var name = document.getElementById('npName').value.trim();
+    var age = document.getElementById('npAge').value;
+    var gender = document.getElementById('npGender').value;
+    var msg = document.getElementById('npMsg');
+
+    if (!name) { msg.textContent = 'Name is required.'; msg.className = 'msg error'; return; }
+    if (!age || parseInt(age) <= 0) { msg.textContent = 'Valid age is required.'; msg.className = 'msg error'; return; }
+    if (!gender) { msg.textContent = 'Gender is required.'; msg.className = 'msg error'; return; }
+
+    fetch('/api/patients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, age: parseInt(age), gender: gender })
+    })
+    .then(function (r) {
+        if (!r.ok) throw new Error('Failed to add');
+        return r.json();
+    })
+    .then(function (saved) {
+        document.getElementById('newPatientForm').style.display = 'none';
+        selectPatient(saved);
+    })
+    .catch(function (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'msg error';
+    });
+}
 
 // ═══════════════════════════════════════════════════════
 // Generic Autocomplete
@@ -313,10 +448,10 @@ function updateNoMedicinesMsg() {
 // ═══════════════════════════════════════════════════════
 
 function printPrescription() {
-    var patientName = document.getElementById('patientName').value.trim();
-    if (!patientName) {
-        alert('Please enter the patient name before printing.');
-        document.getElementById('patientName').focus();
+    var patientInput = document.getElementById('patientInput');
+    if (!selectedPatient) {
+        alert('Please select a patient before printing.');
+        patientInput.focus();
         return;
     }
 
@@ -325,6 +460,12 @@ function printPrescription() {
         alert('Please add at least one medicine before printing.');
         return;
     }
+
+    // Sync patient print section
+    var patientPrint = document.getElementById('patientPrint');
+    patientPrint.innerHTML = '<strong>' + escapeHtml(selectedPatient.name) + '</strong>' +
+        ' &nbsp; Age: ' + selectedPatient.age +
+        ' &nbsp; ' + escapeHtml(selectedPatient.gender);
 
     // Sync symptoms print section
     var symptomsPrint = document.getElementById('symptomsPrint');

@@ -1,0 +1,73 @@
+/* ─── Home Page Navigation ─────────────────────────── */
+.home-nav {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.home-nav-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    margin: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.home-nav-card:hover {
+    border-color: #3498db;
+    background-color: #f0f7ff;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.15);
+}
+
+.home-nav-primary {
+    display: flex;
+    justify-content: center;
+    margin: 10px auto 20px auto;
+    padding: 20px 40px;
+    background-color: #27ae60;
+    color: white;
+    border-color: #27ae60;
+    font-size: 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    max-width: 350px;
+}
+
+.home-nav-primary:hover {
+    background-color: #219a52;
+    border-color: #219a52;
+    color: white;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.home-nav-primary .nav-icon {
+    font-size: 28px;
+}
+
+.nav-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.nav-label {
+    white-space: nowrap;
+}
+
+.home-nav-group {
+    margin-top: 10px;
+}
+
+.home-nav-group h3 {
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}

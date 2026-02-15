@@ -27,13 +27,43 @@
         <!-- Patient Info -->
         <div class="patient-info">
             <div class="form-row">
-                <label for="patientName">Patient Name:</label>
-                <input type="text" id="patientName" placeholder="Enter patient name" />
+                <label for="patientInput">Patient:</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="patientInput"
+                           placeholder="Type patient name (min 2 letters)..." autocomplete="off" />
+                    <div id="patientDropdown" class="autocomplete-dropdown"></div>
+                </div>
             </div>
             <div class="form-row">
                 <label>Date:</label>
                 <span id="prescriptionDate"></span>
             </div>
+        </div>
+        <div id="patientDetails" class="patient-details" style="display:none;">
+            <span id="patientNameDisplay"></span>
+            <span class="patient-detail-sep">|</span>
+            <span id="patientAgeDisplay"></span>
+            <span class="patient-detail-sep">|</span>
+            <span id="patientGenderDisplay"></span>
+        </div>
+        <div id="patientPrint" class="print-only patient-print-info"></div>
+
+        <!-- New Patient Inline Form (hidden by default) -->
+        <div id="newPatientForm" class="new-patient-form" style="display:none;">
+            <h4>Quick Add Patient</h4>
+            <div class="new-patient-fields">
+                <input type="text" id="npName" placeholder="Name *" />
+                <input type="number" id="npAge" placeholder="Age *" min="0" max="150" style="width:80px;" />
+                <select id="npGender">
+                    <option value="">Gender *</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <button onclick="saveNewPatient()">Save</button>
+                <button onclick="cancelNewPatient()" style="background:#95a5a6;">Cancel</button>
+            </div>
+            <p id="npMsg" class="msg"></p>
         </div>
 
         <hr/>
@@ -124,6 +154,8 @@
             <button type="button" onclick="printPrescription()">
                 Print Prescription
             </button>
+            <a th:href="@{/}" class="manage-link">&larr; Home</a>
+            <a th:href="@{/patients}" class="manage-link">Manage Patients</a>
             <a th:href="@{/medicines}" class="manage-link">Manage Medicines</a>
             <a th:href="@{/symptoms}" class="manage-link">Manage Symptoms</a>
             <a th:href="@{/diagnosis}" class="manage-link">Manage Diagnoses</a>

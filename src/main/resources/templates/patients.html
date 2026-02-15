@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPad - Manage Patients</title>
+    <link rel="stylesheet" th:href="@{/css/prescription.css}">
+    <link rel="stylesheet" th:href="@{/css/medicines.css}">
+</head>
+<body>
+    <div id="medicines-page">
+
+        <div class="page-header">
+            <h1>Manage Patients</h1>
+            <a th:href="@{/}" class="back-link">&larr; Back to Home</a>
+        </div>
+
+        <hr/>
+
+        <!-- Add Patient Form -->
+        <div class="add-medicine-form">
+            <h2>Add New Patient</h2>
+            <div class="form-fields">
+                <div class="field">
+                    <label for="patName">Patient Name *</label>
+                    <input type="text" id="patName" placeholder="e.g., John Doe" />
+                </div>
+                <div class="field">
+                    <label for="patAge">Age *</label>
+                    <input type="number" id="patAge" placeholder="e.g., 35" style="width:100px;" min="0" max="150" />
+                </div>
+                <div class="field">
+                    <label for="patGender">Gender *</label>
+                    <select id="patGender">
+                        <option value="">-- Select --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-fields" style="margin-top: 8px;">
+                <div class="field">
+                    <label for="patPhone">Phone</label>
+                    <input type="text" id="patPhone" placeholder="e.g., +91-9876543210" />
+                </div>
+                <div class="field">
+                    <label for="patAddress">Address</label>
+                    <input type="text" id="patAddress" placeholder="e.g., 123 Main St" style="width:300px;" />
+                </div>
+                <button id="addPatBtn" onclick="addPatient()">Add Patient</button>
+            </div>
+            <p id="addMsg" class="msg"></p>
+        </div>
+
+        <hr/>
+
+        <!-- Edit Patient Form (hidden by default) -->
+        <div id="editSection" class="add-medicine-form" style="display:none;">
+            <h2>Edit Patient</h2>
+            <input type="hidden" id="editId" />
+            <div class="form-fields">
+                <div class="field">
+                    <label for="editName">Patient Name *</label>
+                    <input type="text" id="editName" />
+                </div>
+                <div class="field">
+                    <label for="editAge">Age *</label>
+                    <input type="number" id="editAge" style="width:100px;" min="0" max="150" />
+                </div>
+                <div class="field">
+                    <label for="editGender">Gender *</label>
+                    <select id="editGender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-fields" style="margin-top: 8px;">
+                <div class="field">
+                    <label for="editPhone">Phone</label>
+                    <input type="text" id="editPhone" />
+                </div>
+                <div class="field">
+                    <label for="editAddress">Address</label>
+                    <input type="text" id="editAddress" style="width:300px;" />
+                </div>
+                <button onclick="saveEdit()">Save</button>
+                <button onclick="cancelEdit()" style="background:#95a5a6;">Cancel</button>
+            </div>
+            <p id="editMsg" class="msg"></p>
+            <hr/>
+        </div>
+
+        <!-- Search/Filter -->
+        <div class="filter-section">
+            <label for="filterInput">Search:</label>
+            <input type="text" id="filterInput" placeholder="Filter patients by name..." oninput="filterPatients()" />
+            <span id="patientCount" class="medicine-count"></span>
+        </div>
+
+        <!-- Patient List -->
+        <table id="medicineListTable">
+            <thead>
+                <tr>
+                    <th class="col-id">#</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th style="width:100px;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="patientListBody">
+            </tbody>
+        </table>
+
+        <p id="noResultsMsg" class="no-results-msg" style="display:none;">No patients found.</p>
+
+    </div>
+
+    <script th:src="@{/js/patients.js}"></script>
+</body>
+</html>

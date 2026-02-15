@@ -4,15 +4,18 @@ A simple, lightweight prescription writing application for doctors. Built with S
 
 ## Features
 
+- **Home Dashboard** — Central landing page with quick links to prescription and all management pages
+- **Patient Management** — Add, edit, delete patients (name, age, gender, phone, address); search/filter
+- **Patient Autocomplete** — Select existing patient on prescription page or quick-add a new patient inline
 - **Medicine Autocomplete** — Type 2+ letters to search medicines from the database
 - **Dosage Specification** — Set Morning / Noon / Night dosage as Full (1), Half (½), or None (--) for each medicine
 - **Symptoms & Sub-Symptoms** — Record symptoms with selectable sub-symptoms (e.g., Fever → High Grade, Intermittent)
 - **Diagnosis** — Add diagnoses from the database with autocomplete
-- **Add/Remove Medicines** — Manage the medicine database (add new medicines, remove existing ones)
+- **Manage Medicines** — Add/remove medicines from a dedicated management page
 - **Manage Symptoms** — Add/remove symptoms and their sub-symptoms from a dedicated management page
 - **Manage Diagnoses** — Add/remove diagnoses with categories from a dedicated management page
 - **Instructions** — Add free-text notes and instructions to the prescription
-- **Print-Ready** — Clean A4 prescription layout with symptoms, diagnosis, medicine table, and signature footer
+- **Print-Ready** — Clean A4 prescription layout with patient details, symptoms, diagnosis, medicine table, and signature footer
 - **Persistent Storage** — H2 file-based database; all data survives restarts
 - **Standalone Installer** — Package as `.dmg` (macOS) or `.msi` (Windows) with embedded JRE — no Java needed on target machine
 
@@ -38,7 +41,7 @@ cd MedPad
 mvn spring-boot:run
 ```
 
-Open **http://localhost:8080** in your browser.
+Open **http://localhost:8080** in your browser. You'll see the home dashboard.
 
 ### Default Doctor Details
 

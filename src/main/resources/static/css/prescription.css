@@ -102,6 +102,90 @@ hr {
     font-weight: 500;
 }
 
+/* ─── Patient Details ─────────────────────────────── */
+.patient-details {
+    padding: 6px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.patient-details span {
+    font-weight: 500;
+}
+
+.patient-detail-sep {
+    color: #ccc;
+    margin: 0 8px;
+}
+
+.patient-print-info {
+    font-size: 15px;
+    padding: 4px 0;
+}
+
+/* ─── New Patient Form ───────────────────────────── */
+.new-patient-form {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin: 8px 0;
+}
+
+.new-patient-form h4 {
+    font-size: 14px;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.new-patient-fields {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.new-patient-fields input,
+.new-patient-fields select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.new-patient-fields input:focus,
+.new-patient-fields select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 4px rgba(52, 152, 219, 0.3);
+}
+
+.new-patient-fields button {
+    padding: 6px 16px;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: #27ae60;
+}
+
+.new-patient-fields button:hover {
+    opacity: 0.9;
+}
+
+/* ─── Autocomplete Add New ───────────────────────── */
+.autocomplete-add-new {
+    color: #27ae60;
+    font-weight: 600;
+    border-top: 1px solid #ddd;
+}
+
+.autocomplete-add-new:hover {
+    background-color: #e8f8ef !important;
+}
+
 /* ─── Rx Symbol ────────────────────────────────────── */
 .rx-symbol {
     font-size: 28px;
@@ -469,14 +553,24 @@ hr {
         color: #000;
     }
 
-    /* Patient name input becomes plain text */
-    #patientName {
-        border: none !important;
-        background: transparent !important;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 0;
-        box-shadow: none !important;
+    /* Patient info: hide input, show print section */
+    .patient-info {
+        display: none !important;
+    }
+
+    .patient-details {
+        display: none !important;
+    }
+
+    .new-patient-form {
+        display: none !important;
+    }
+
+    .patient-print-info {
+        display: block !important;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 4px 0;
     }
 
     /* Clean table for print */
